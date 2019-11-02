@@ -1,6 +1,7 @@
 const express = require('express')
 const pokemonrouter = require('./pokemons/router')
 const pokemonrouterv2 = require('./pokemons/router_V2')
+const userRouter = require('./user/router')
 const app = express()
 
 // MongoDB  -> document Based database
@@ -12,6 +13,7 @@ const app = express()
  //ลงทะเบียน middleware
 app.use(express.json())
 app.use(pokemonrouter)
+app.use(userRouter)
 app.use('/v2',pokemonrouterv2)
 // Get http://localhost:3000/pokemons?name=Pikachu&type=Psysic
 //QueryString   

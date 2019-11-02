@@ -9,7 +9,6 @@ const mongoUrl = 'mongodb+srv://FirmAdmin:Ryoma2460@pokemon-cluster-9jypk.gcp.mo
  
  router.get('/pokemons',async (req,res)=>{
          let name = req.query.name
-
          let client = await MongoClient.connect(mongoUrl,
                 { useNewUrlParser:true,useUnifiedTopology:true}
                 ).catch((err)=>{
@@ -38,10 +37,27 @@ const mongoUrl = 'mongodb+srv://FirmAdmin:Ryoma2460@pokemon-cluster-9jypk.gcp.mo
      res.json({pokemon_id: id })
  })
  
- router.post('/pokemons',(req,res)=>{
-         let p = req.body
-         console.log(p)
-         res.json(p)
+ router.post('/pokemons',async (req,res)=>{
+                let p = req.body.name
+                 let client = await MongoClient.connect(mongoUrl,
+                { useNewUrlParser:true,useUnifiedTopology:true}
+                ).catch((err)=>{
+                        console.error(err)
+                        res.status(500).json({error:err})
+                        return
+                  })
+               try{
+                let db = client.db('pokemon')
+                let docs= db.collection('pokemons').insertOne(p)
+                console.log(docs)
+                res.status(201).json({id: docs.insertOne})
+               } catch (err){
+                console.error(err)
+                res.status(500).json({error:err})
+                } finally {
+                        client.close()
+                }
+         
  
  })
 
