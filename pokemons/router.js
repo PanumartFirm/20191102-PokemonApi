@@ -1,13 +1,33 @@
 const express = require('express')
+const MongoClient = require('mongodb').MongoClient
 const router = express.Router()
 
+const mongoUrl = 'mongodb+srv://FirmAdmin:Ryoma2460@pokemon-cluster-9jypk.gcp.mongodb.net/test?retryWrites=true&w=majority'
 
  // Get http://localhost:3000/pokemons?name=Pikachu&type=Psysic
  //QueryString   
  
- router.get('/pokemons',(req,res)=>{
+ router.get('/pokemons',async (req,res)=>{
          let name = req.query.name
-         res.json({pokemon_name: name})
+
+         let client = await MongoClient.connect(mongoUrl,
+                { useNewUrlParser:true,useUnifiedTopology:true}
+                ).catch((err)=>{
+                        console.error(err)
+                        res.status(500).json({error:err})
+                  })
+               
+         try {
+                let db = client.db('pokemon')
+                let docs= db.collection('pokemons').find({}).toArray()
+                res.json(docs)
+         } catch(err){
+                 console.error(err)
+                 res.status(500).json({error:err})
+         } finally {
+                 client.close()
+         }
+
  })
  
  // Get http://localhost:3000/pokemon/999
